@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  api_gateway:
+    build: ./backend/api_gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - job_posting_service
+      - job_search_service
+      - notification_service
+
+  job_posting_service:
+    build: ./backend/job_posting_service
+    environment:
+      - DB_URL=postgresql://ardah:password@db:5432/jobs
+    depends_on:
+      - db
+      - redis
+      - queue
+
+  job_search_service:
+    build: ./backend/job_search_service
+    environment:
+      - DB_URL=postgresql://ardah:password@db:5432/search
+    depends_on:
+      - db
+      - redis
+
+  notification_service:
+    build: ./backend/notification_service
+    depends_on:
+      - queue
+      - nosql
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@queue:5672/
+  
+  job_alert_worker:
+    build: ./backend/notification_service
+    command: python app/workers/job_alert_worker.py
+    depends_on:
+      - queue
+      - nosql
+      - db
+
+  related_job_worker:
+    build: ./backend/notification_service
+    command: python app/workers/related_job_worker.py
+    depends_on:
+      - queue
+      - nosql
+      - db
+
+  related_job_scheduler:
+    build: ./backend/notification_service
+    command: python app/workers/related_job_scheduler.py
+    depends_on:
+      - queue
+      - nosql
+      - db
+
+
+  ai_agent:
+    build: ./backend/ai_agent
+    depends_on:
+      - api_gateway
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api_gateway
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: jobs
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  nosql:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  queue:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # web UI
+
+volumes:
+  postgres-data:
+  mongo-data:
