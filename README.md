@@ -59,7 +59,7 @@ A comprehensive job search platform built with microservices architecture.
 - Job Posting: `http://job_posting_service:8000/docs`
 - Job Search: `http://job_search_service:8001/docs`
 - Notification: `http://notification_service:8002/docs`
-- AI Agent: `http://localhost:8003/docs`
+- AI Agent: `http://ai_agent:8003/docs`
 
 ## Development
 
