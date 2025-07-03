@@ -2,6 +2,8 @@
 
 A comprehensive job search platform built with microservices architecture.
 
+video link: https://youtu.be/RHMdTsrmF_0?si=vZfdHCCuiSv3C2TP
+
 ![ER Diagram](ER%20Diagram.png)
 
 ## Architecture
