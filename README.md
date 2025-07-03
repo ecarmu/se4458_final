@@ -1,6 +1,6 @@
 # Job Search Web Application
 
-  ![ER Diagram](docs/er-diagram.png)
+![ER Diagram](docs/ER Diagram.png)
 
 A comprehensive job search platform built with microservices architecture.
 
